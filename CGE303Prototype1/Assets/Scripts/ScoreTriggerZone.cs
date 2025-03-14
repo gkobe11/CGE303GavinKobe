@@ -13,6 +13,8 @@ public class ScoreTriggerZone : MonoBehaviour
             active = false;
             ScoreManager.score++;
 
+            collision.gameObject.GetComponent<PlatformerPlayerController>().playCoinSound(); //play score sound
+
             //destroy trigger zone
             Destroy(gameObject);
         }

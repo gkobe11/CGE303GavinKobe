@@ -28,6 +28,8 @@ public class PlatformerPlayerController : MonoBehaviour
     public AudioClip scoreSound;
     private AudioSource playerAudio;
 
+    private Animator animator;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,6 +38,8 @@ public class PlatformerPlayerController : MonoBehaviour
 
         //set reference to sudio source comp
         playerAudio = GetComponent<AudioSource>();
+
+        animator = GetComponent<Animator>(); //get animator component
 
         //check ground check is assigned
         if (GroundCheck == null)
@@ -59,22 +63,37 @@ public class PlatformerPlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        //move player using rigid body
-        rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
+        // if player has not been hit recently, allow movement
+        if (!PlayerHealth.hitRecently)
+        {
+            //move player using rigid body
+            rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
+        }
+
+        //set xVelocity parameter
+        animator.SetFloat("xVelocityAbs", Mathf.Abs(rb.velocity.x)); 
+
+        //set yVelocity parameter
+        animator.SetFloat("yVelocity", rb.velocity.y); 
 
         //check if player is grounded
         isGrounded = Physics2D.OverlapCircle(GroundCheck.position, groundCheckRadius, groundLayer);
 
-        //add animation here 
+        //set isGrounded parameter in animator
+        animator.SetBool("onGround", isGrounded);
+
+        //add animation here
 
         //ensure player is facing in movement direction
         if (horizontalInput > 0)
         {
-            transform.localScale = new Vector3(1f, 1f, 1f); //facing right
+           // transform.localScale = new Vector3(1f, 1f, 1f); //facing right
+            transform.rotation = Quaternion.Euler(0f, 0f, 0f); //reset rotation
         }
         else if (horizontalInput < 0)
         {
-            transform.localScale = new Vector3(-1f, 1f, 1f); //facing left
+           // transform.localScale = new Vector3(-1f, 1f, 1f); //facing left
+            transform.rotation = Quaternion.Euler(0f, 180f, 0f); //reset rotation
         }
     }
 
